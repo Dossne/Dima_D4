@@ -1,0 +1,26 @@
+# Unity generated
+Library/
+Temp/
+Obj/
+Logs/
+UserSettings/
+MemoryCaptures/
+.vsconfig
+
+# Build output
+Builds/
+*.apk
+*.aab
+
+# IDE
+.vs/
+.idea/
+*.csproj
+*.sln
+
+# Agent tools
+.repomix-snapshot.txt
+
+# OS
+.DS_Store
+Thumbs.db
