@@ -1,3 +1,39 @@
+## [OE-LEVEL-004] level/AsteroidSpawner | COMPLETED | 2026-04-02
+
+### context
+project: orbit-escape | engine: unity-6 (6000.4.0f1) | pipeline: urp-2d | platform: android
+
+### what_was_implemented
+- AsteroidSpawner (Assets/Scripts/Level/AsteroidSpawner.cs):
+    pattern: DifficultySpawner | SafeEdgePlacement
+    subscribes_to: [GameEvents.OnScoreUpdated]
+    fires: []
+    responsibility: "spawns asteroids on a score-based difficulty curve and places them on safe screen edges away from the current planet direction"
+
+### files
+| action   | path                                   | notes                                               |
+|----------|----------------------------------------|-----------------------------------------------------|
+| CREATED  | Assets/Scripts/Level/AsteroidSpawner.cs | score-gated asteroid spawning with edge safety     |
+| MODIFIED | CHANGELOG.md                           | recorded OE-LEVEL-004 completion                  |
+
+### architecture_decisions
+- used `PlayerRegistry.Player` and the player's current orbit pivot to derive a planet direction vector, keeping spawn safety aligned with the actual gameplay state instead of scene tags
+- implemented a five-attempt safe-edge search with a fallback edge choice so the spawner still produces a valid asteroid even in dense or unlucky viewport configurations
+
+### known_limitations
+- the score thresholds are currently hard-coded to the prototype rules; if the curve changes later, this should move into a tuning asset rather than staying in script constants
+
+### task_ref
+beads_id: OE-LEVEL-004
+commit_title: feat(level): add AsteroidSpawner
+current_branch: feature/OE-LEVEL-004-asteroid-spawner
+
+### project_state
+completed_tasks: [OE-SETUP-001, OE-CORE-001, OE-CORE-002, OE-PLAYER-001, OE-PLAYER-002, OE-PLAYER-003, OE-LEVEL-001, OE-LEVEL-002, OE-LEVEL-003, OE-INPUT-001, OE-STATE-001, OE-STATE-002, OE-UI-001, OE-UI-002, OE-UI-003, OE-UI-004, OE-FEEL-001, OE-AUDIO-001, OE-PLAYER-004, OE-PLAYER-005, OE-LEVEL-004]
+next_ready: OE-BUILD-001
+blocked: []
+remaining: 1 of 22 tasks
+current_branch: feature/OE-LEVEL-004-asteroid-spawner
 ## [OE-PLAYER-005] player/TrajectoryPredictor | COMPLETED | 2026-04-02
 
 ### context
@@ -758,6 +794,7 @@ OE-BOOTSTRAP (manual)
 
 ### Next task
 OE-SETUP-001
+
 
 
 
