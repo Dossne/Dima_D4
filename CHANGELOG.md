@@ -4,6 +4,43 @@
 <!-- Each entry written by the agent that completed the task -->
 <!-- Purpose: allows any new agent to understand project state without reading full codebase -->
 
+## [OE-PLAYER-002] player/PlayerMovement | COMPLETED | 2026-04-02
+
+### context
+project: orbit-escape | engine: unity-6 (6000.4.0f1) | pipeline: urp-2d | platform: android
+
+### what_was_implemented
+- PlayerMovement (Assets/Scripts/Player/PlayerMovement.cs):
+    pattern: RequireComponentRuntime | SingleResponsibility
+    subscribes_to: []
+    fires: [GameEvents.GameOver]
+    responsibility: "launches the player along the orbit tangent, maintains flight-only Rigidbody2D motion, and detects off-screen failure"
+
+### files
+| action   | path                                     | notes                                              |
+|----------|------------------------------------------|----------------------------------------------------|
+| CREATED  | Assets/Scripts/Player/PlayerMovement.cs  | linear flight controller using Rigidbody2D         |
+| MODIFIED | CHANGELOG.md                             | recorded OE-PLAYER-002 completion and next task    |
+
+### architecture_decisions
+- configured Rigidbody2D runtime defaults inside `Awake` so the task remains self-contained even before a prefab is fully wired in-scene
+- reused `PlayerOrbitController.currentPivot` for tangent launch direction instead of duplicating orbit state in movement
+
+### known_limitations
+- `Camera.main` is used as the viewport source until a dedicated camera dependency is introduced; this should be revisited if camera ownership becomes stricter later
+- no scene/prefab has been wired yet, so motion behavior is compile-verified but not gameplay-verified
+
+### task_ref
+beads_id: OE-PLAYER-002
+commit_title: feat(player): add PlayerMovement
+current_branch: feature/OE-PLAYER-002-player-movement
+
+### project_state
+completed_tasks: [OE-SETUP-001, OE-CORE-001, OE-CORE-002, OE-PLAYER-001, OE-PLAYER-002]
+next_ready: OE-PLAYER-003
+blocked: [OE-LEVEL-002 (waiting for OE-PLAYER-003), OE-PLAYER-005 (waiting for stable orbit/launch flow), OE-BUILD-001 (waiting for upstream systems)]
+remaining: 17 of 22 tasks
+current_branch: feature/OE-PLAYER-002-player-movement
 ## [OE-PLAYER-001] player/PlayerOrbitController | COMPLETED | 2026-04-02
 
 ### context
@@ -215,6 +252,7 @@ OE-BOOTSTRAP (manual)
 
 ### Next task
 OE-SETUP-001
+
 
 
 
