@@ -4,6 +4,43 @@
 <!-- Each entry written by the agent that completed the task -->
 <!-- Purpose: allows any new agent to understand project state without reading full codebase -->
 
+## [OE-PLAYER-001] player/PlayerOrbitController | COMPLETED | 2026-04-02
+
+### context
+project: orbit-escape | engine: unity-6 (6000.4.0f1) | pipeline: urp-2d | platform: android
+
+### what_was_implemented
+- PlayerOrbitController (Assets/Scripts/Player/PlayerOrbitController.cs):
+    pattern: EventDrivenSubscriber | SingleResponsibility
+    subscribes_to: [GameEvents.OnTap, GameEvents.OnScoreUpdated, GameEvents.OnGameStarted, GameEvents.OnPlanetLanded]
+    fires: []
+    responsibility: "rotates the player around the current pivot and toggles orbit mode in response to gameplay events"
+
+### files
+| action   | path                                           | notes                                                |
+|----------|------------------------------------------------|------------------------------------------------------|
+| CREATED  | Assets/Scripts/Player/PlayerOrbitController.cs | orbit rotation controller with event subscriptions   |
+| MODIFIED | CHANGELOG.md                                   | recorded OE-PLAYER-001 completion and next task      |
+
+### architecture_decisions
+- registered the player transform in `PlayerRegistry` during `Awake` and cleared it in `OnDestroy` so downstream systems can query the active player without scene search APIs
+- used `GetComponent("PlayerMovement") as Behaviour` to avoid introducing a hard compile-time dependency before `PlayerMovement.cs` exists; this keeps the task independently compilable
+
+### known_limitations
+- `currentPivot` still needs a scene reference or a future event-driven assignment before orbit motion can be observed in play mode
+- the movement toggle currently uses a name-based component lookup and can be tightened once `PlayerMovement.cs` exists
+
+### task_ref
+beads_id: OE-PLAYER-001
+commit_title: feat(player): add PlayerOrbitController
+current_branch: feature/OE-PLAYER-001-orbit-controller
+
+### project_state
+completed_tasks: [OE-SETUP-001, OE-CORE-001, OE-CORE-002, OE-PLAYER-001]
+next_ready: OE-PLAYER-002
+blocked: [OE-PLAYER-003 (waiting for OE-PLAYER-002), OE-PLAYER-005 (waiting for player orbit flow), OE-BUILD-001 (waiting for upstream systems)]
+remaining: 18 of 22 tasks
+current_branch: feature/OE-PLAYER-001-orbit-controller
 ## [OE-CORE-002] core/PlayerRegistry | COMPLETED | 2026-04-02
 
 ### context
@@ -178,5 +215,6 @@ OE-BOOTSTRAP (manual)
 
 ### Next task
 OE-SETUP-001
+
 
 
