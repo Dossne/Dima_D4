@@ -1,3 +1,39 @@
+## [OE-UI-003] ui/UIHUD | COMPLETED | 2026-04-02
+
+### context
+project: orbit-escape | engine: unity-6 (6000.4.0f1) | pipeline: urp-2d | platform: android
+
+### what_was_implemented
+- UIHUD (Assets/Scripts/UI/UIHUD.cs):
+    pattern: HUDPresenter | EventDrivenUI
+    subscribes_to: [GameEvents.OnGameStarted, GameEvents.OnGameOver, GameEvents.OnScoreUpdated]
+    fires: []
+    responsibility: "shows the runtime score while a run is active and hides itself on game over"
+
+### files
+| action   | path                        | notes                                         |
+|----------|-----------------------------|-----------------------------------------------|
+| CREATED  | Assets/Scripts/UI/UIHUD.cs  | score HUD presenter bound to score updates    |
+| MODIFIED | CHANGELOG.md                | recorded OE-UI-003 completion and next task   |
+
+### architecture_decisions
+- initialized the label to zero in `Awake` so scene previews and first-run state remain deterministic before the first event arrives
+- kept HUD visibility fully event-driven instead of polling game state, which matches the event-bus architecture already used across the project
+
+### known_limitations
+- formatting is intentionally simple (`SCORE: N`); styling, localization, and combo/multiplier readouts can be layered later without changing ownership
+
+### task_ref
+beads_id: OE-UI-003
+commit_title: feat(ui): add UIHUD
+current_branch: feature/OE-UI-003-hud
+
+### project_state
+completed_tasks: [OE-SETUP-001, OE-CORE-001, OE-CORE-002, OE-PLAYER-001, OE-PLAYER-002, OE-PLAYER-003, OE-LEVEL-001, OE-LEVEL-002, OE-LEVEL-003, OE-INPUT-001, OE-STATE-001, OE-STATE-002, OE-UI-001, OE-UI-002, OE-UI-003]
+next_ready: OE-UI-004
+blocked: [OE-BUILD-001 (waiting for upstream systems)]
+remaining: 7 of 22 tasks
+current_branch: feature/OE-UI-003-hud
 ## [OE-UI-002] ui/UITapHint | COMPLETED | 2026-04-02
 
 ### context
@@ -577,6 +613,7 @@ OE-BOOTSTRAP (manual)
 
 ### Next task
 OE-SETUP-001
+
 
 
 
