@@ -4,6 +4,42 @@
 <!-- Each entry written by the agent that completed the task -->
 <!-- Purpose: allows any new agent to understand project state without reading full codebase -->
 
+## [OE-LEVEL-003] level/CameraFollower | COMPLETED | 2026-04-02
+
+### context
+project: orbit-escape | engine: unity-6 (6000.4.0f1) | pipeline: urp-2d | platform: android
+
+### what_was_implemented
+- CameraFollower (Assets/Scripts/Level/CameraFollower.cs):
+    pattern: FollowCamera | SingleResponsibility
+    subscribes_to: []
+    fires: []
+    responsibility: "smoothly follows the player target and exposes ShakeOffset for future feel systems"
+
+### files
+| action   | path                                   | notes                                          |
+|----------|----------------------------------------|------------------------------------------------|
+| CREATED  | Assets/Scripts/Level/CameraFollower.cs | late-update follow camera with ShakeOffset API |
+| MODIFIED | CHANGELOG.md                           | recorded OE-LEVEL-003 completion and next task |
+
+### architecture_decisions
+- exposed `ShakeOffset` as a property so later feel code can add shake without fighting camera follow ownership
+- allowed optional serialized `target`, with fallback to `PlayerRegistry.Player`, so the component works both with explicit scene wiring and dynamic player registration
+
+### known_limitations
+- no dedicated damping curve or dead-zone yet; this is a straightforward smooth follow for prototype phase
+
+### task_ref
+beads_id: OE-LEVEL-003
+commit_title: feat(level): add CameraFollower
+current_branch: feature/OE-LEVEL-003-camera-follower
+
+### project_state
+completed_tasks: [OE-SETUP-001, OE-CORE-001, OE-CORE-002, OE-PLAYER-001, OE-PLAYER-002, OE-PLAYER-003, OE-LEVEL-001, OE-LEVEL-002, OE-LEVEL-003]
+next_ready: OE-INPUT-001
+blocked: [OE-FEEL-001 (waiting for camera follower), OE-BUILD-001 (waiting for upstream systems)]
+remaining: 13 of 22 tasks
+current_branch: feature/OE-LEVEL-003-camera-follower
 ## [OE-LEVEL-002] level/LevelGenerator | COMPLETED | 2026-04-02
 
 ### context
@@ -361,6 +397,7 @@ OE-BOOTSTRAP (manual)
 
 ### Next task
 OE-SETUP-001
+
 
 
 
