@@ -1,4 +1,40 @@
-﻿# CHANGELOG — Orbit Escape
+## [OE-STATE-001] core/GameStateManager | COMPLETED | 2026-04-02
+
+### context
+project: orbit-escape | engine: unity-6 (6000.4.0f1) | pipeline: urp-2d | platform: android
+
+### what_was_implemented
+- GameStateManager (Assets/Scripts/Core/GameStateManager.cs):
+    pattern: RuntimeStateOwner | TimeControl
+    subscribes_to: [GameEvents.OnGameStarted, GameEvents.OnGameOver]
+    fires: []
+    responsibility: "owns death state, slow-motion game-over sequence, and safe scene restart behavior"
+
+### files
+| action   | path                                   | notes                                                |
+|----------|----------------------------------------|------------------------------------------------------|
+| CREATED  | Assets/Scripts/Core/GameStateManager.cs | default-execution-order state owner with restart API |
+| MODIFIED | CHANGELOG.md                           | recorded OE-STATE-001 completion and next task       |
+
+### architecture_decisions
+- used `DefaultExecutionOrder(-100)` instead of manual project setting so execution priority travels with the script and stays visible in code review
+- kept the death sequence in a single coroutine guarded by `_isDead` and `_gameOverRoutine`, preventing duplicate slow-motion stacks from repeated `OnGameOver` firing
+
+### known_limitations
+- restart currently hard-loads scene index `0`; that matches the prototype scope, but scene naming/build-profile indirection can be introduced later if multi-scene flow appears
+
+### task_ref
+beads_id: OE-STATE-001
+commit_title: feat(core): add GameStateManager
+current_branch: feature/OE-STATE-001-game-state-manager
+
+### project_state
+completed_tasks: [OE-SETUP-001, OE-CORE-001, OE-CORE-002, OE-PLAYER-001, OE-PLAYER-002, OE-PLAYER-003, OE-LEVEL-001, OE-LEVEL-002, OE-LEVEL-003, OE-INPUT-001, OE-STATE-001]
+next_ready: OE-STATE-002
+blocked: [OE-BUILD-001 (waiting for upstream systems)]
+remaining: 11 of 22 tasks
+current_branch: feature/OE-STATE-001-game-state-manager
+# CHANGELOG — Orbit Escape
 <!-- AI-READABLE PROJECT HISTORY -->
 <!-- Format: newest entry first -->
 <!-- Each entry written by the agent that completed the task -->
@@ -433,6 +469,7 @@ OE-BOOTSTRAP (manual)
 
 ### Next task
 OE-SETUP-001
+
 
 
 
