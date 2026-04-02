@@ -1,4 +1,4 @@
-## [OE-UI-004] ui/UIGameOver | IN_PROGRESS | 2026-04-02
+## [OE-UI-004] ui/UIGameOver | COMPLETED | 2026-04-02
 
 ### context
 project: orbit-escape | engine: unity-6 (6000.4.0f1) | pipeline: urp-2d | platform: android
@@ -14,7 +14,7 @@ project: orbit-escape | engine: unity-6 (6000.4.0f1) | pipeline: urp-2d | platfo
 | action   | path                            | notes                                          |
 |----------|---------------------------------|------------------------------------------------|
 | CREATED  | Assets/Scripts/UI/UIGameOver.cs | game-over presenter with restart button flow   |
-| MODIFIED | CHANGELOG.md                    | recorded OE-UI-004 work in progress           |
+| MODIFIED | CHANGELOG.md                    | recorded OE-UI-004 completion and next task           |
 
 ### architecture_decisions
 - delayed score refresh by one frame after `OnGameOver` so `ScoreManager` can finish persisting the new high score before the panel reads it
@@ -29,10 +29,10 @@ commit_title: feat(ui): add UIGameOver
 current_branch: feature/OE-UI-004-game-over
 
 ### project_state
-completed_tasks: [OE-SETUP-001, OE-CORE-001, OE-CORE-002, OE-PLAYER-001, OE-PLAYER-002, OE-PLAYER-003, OE-LEVEL-001, OE-LEVEL-002, OE-LEVEL-003, OE-INPUT-001, OE-STATE-001, OE-STATE-002, OE-UI-001, OE-UI-002, OE-UI-003]
+completed_tasks: [OE-SETUP-001, OE-CORE-001, OE-CORE-002, OE-PLAYER-001, OE-PLAYER-002, OE-PLAYER-003, OE-LEVEL-001, OE-LEVEL-002, OE-LEVEL-003, OE-INPUT-001, OE-STATE-001, OE-STATE-002, OE-UI-001, OE-UI-002, OE-UI-003, OE-UI-004]
 next_ready: OE-FEEL-001
-blocked: [OE-UI-004 (in progress), OE-BUILD-001 (waiting for upstream systems)]
-remaining: 7 of 22 tasks
+blocked: [OE-BUILD-001 (waiting for upstream systems)]
+remaining: 6 of 22 tasks
 current_branch: feature/OE-UI-004-game-over
 ## [OE-UI-003] ui/UIHUD | COMPLETED | 2026-04-02
 
@@ -65,10 +65,10 @@ commit_title: feat(ui): add UIHUD
 current_branch: feature/OE-UI-003-hud
 
 ### project_state
-completed_tasks: [OE-SETUP-001, OE-CORE-001, OE-CORE-002, OE-PLAYER-001, OE-PLAYER-002, OE-PLAYER-003, OE-LEVEL-001, OE-LEVEL-002, OE-LEVEL-003, OE-INPUT-001, OE-STATE-001, OE-STATE-002, OE-UI-001, OE-UI-002, OE-UI-003]
+completed_tasks: [OE-SETUP-001, OE-CORE-001, OE-CORE-002, OE-PLAYER-001, OE-PLAYER-002, OE-PLAYER-003, OE-LEVEL-001, OE-LEVEL-002, OE-LEVEL-003, OE-INPUT-001, OE-STATE-001, OE-STATE-002, OE-UI-001, OE-UI-002, OE-UI-003, OE-UI-004]
 next_ready: OE-UI-004
 blocked: [OE-BUILD-001 (waiting for upstream systems)]
-remaining: 7 of 22 tasks
+remaining: 6 of 22 tasks
 current_branch: feature/OE-UI-003-hud
 ## [OE-UI-002] ui/UITapHint | COMPLETED | 2026-04-02
 
@@ -649,6 +649,7 @@ OE-BOOTSTRAP (manual)
 
 ### Next task
 OE-SETUP-001
+
 
 
 
