@@ -1,3 +1,39 @@
+## [OE-AUDIO-001] managers/AudioManager | COMPLETED | 2026-04-02
+
+### context
+project: orbit-escape | engine: unity-6 (6000.4.0f1) | pipeline: urp-2d | platform: android
+
+### what_was_implemented
+- AudioManager (Assets/Scripts/Managers/AudioManager.cs):
+    pattern: EventDrivenAudio | SafeDelegateSubscription
+    subscribes_to: [GameEvents.OnTap, GameEvents.OnScoreUpdated, GameEvents.OnGameOver]
+    fires: []
+    responsibility: "plays one-shot audio cues for tap, score, and game over events with safe named delegate teardown"
+
+### files
+| action   | path                              | notes                                            |
+|----------|-----------------------------------|--------------------------------------------------|
+| CREATED  | Assets/Scripts/Managers/AudioManager.cs | one-shot audio presenter with named delegates |
+| MODIFIED | CHANGELOG.md                      | recorded OE-AUDIO-001 completion and next task   |
+
+### architecture_decisions
+- used named `Action` fields instead of inline lambdas so unsubscription remains exact after restarts and scene reloads
+- skipped score sound for the initial `ScoreUpdated(0)` event to avoid an unwanted startup ping while HUD initializes
+
+### known_limitations
+- audio clips are scene-assigned references; no asset loading or fallback sound library yet
+
+### task_ref
+beads_id: OE-AUDIO-001
+commit_title: feat(managers): add AudioManager
+current_branch: feature/OE-AUDIO-001-audio-manager
+
+### project_state
+completed_tasks: [OE-SETUP-001, OE-CORE-001, OE-CORE-002, OE-PLAYER-001, OE-PLAYER-002, OE-PLAYER-003, OE-LEVEL-001, OE-LEVEL-002, OE-LEVEL-003, OE-INPUT-001, OE-STATE-001, OE-STATE-002, OE-UI-001, OE-UI-002, OE-UI-003, OE-UI-004, OE-FEEL-001, OE-AUDIO-001]
+next_ready: OE-PLAYER-004
+blocked: [OE-BUILD-001 (waiting for upstream systems)]
+remaining: 4 of 22 tasks
+current_branch: feature/OE-AUDIO-001-audio-manager
 ## [OE-UI-004] ui/UIGameOver | COMPLETED | 2026-04-02
 
 ### context
@@ -649,6 +685,7 @@ OE-BOOTSTRAP (manual)
 
 ### Next task
 OE-SETUP-001
+
 
 
 
