@@ -4,6 +4,43 @@
 <!-- Each entry written by the agent that completed the task -->
 <!-- Purpose: allows any new agent to understand project state without reading full codebase -->
 
+## [OE-LEVEL-002] level/LevelGenerator | COMPLETED | 2026-04-02
+
+### context
+project: orbit-escape | engine: unity-6 (6000.4.0f1) | pipeline: urp-2d | platform: android
+
+### what_was_implemented
+- LevelGenerator (Assets/Scripts/Level/LevelGenerator.cs):
+    pattern: EventDrivenSpawner | SingleResponsibility
+    subscribes_to: [GameEvents.OnGameStarted, GameEvents.OnScoreUpdated]
+    fires: []
+    responsibility: "spawns the first and subsequent planets near the player using viewport-safe placement rules"
+
+### files
+| action   | path                                  | notes                                              |
+|----------|---------------------------------------|----------------------------------------------------|
+| CREATED  | Assets/Scripts/Level/LevelGenerator.cs| event-driven planet spawner with viewport filtering |
+| MODIFIED | CHANGELOG.md                          | recorded OE-LEVEL-002 completion and next task     |
+
+### architecture_decisions
+- used `PlayerRegistry.Player` as the only player lookup source, keeping the spawner free of scene search APIs
+- kept the fallback spawn deterministic (`player + up * firstPlanetDistance`) so impossible random attempts do not produce null or off-screen planets
+
+### known_limitations
+- `planetPrefab` still needs to be assigned in the scene/prefab before any runtime spawning can occur
+- the current implementation uses `Camera.main` as its viewport source until a stricter camera dependency is introduced
+
+### task_ref
+beads_id: OE-LEVEL-002
+commit_title: feat(level): add LevelGenerator
+current_branch: feature/OE-LEVEL-002-level-generator
+
+### project_state
+completed_tasks: [OE-SETUP-001, OE-CORE-001, OE-CORE-002, OE-PLAYER-001, OE-PLAYER-002, OE-PLAYER-003, OE-LEVEL-001, OE-LEVEL-002]
+next_ready: OE-LEVEL-003
+blocked: [OE-BUILD-001 (waiting for upstream systems), OE-PLAYER-005 (waiting for stronger orbit loop context)]
+remaining: 14 of 22 tasks
+current_branch: feature/OE-LEVEL-002-level-generator
 ## [OE-LEVEL-001] level/Planet | COMPLETED | 2026-04-02
 
 ### context
@@ -324,6 +361,7 @@ OE-BOOTSTRAP (manual)
 
 ### Next task
 OE-SETUP-001
+
 
 
 
