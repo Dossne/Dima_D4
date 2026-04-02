@@ -9,6 +9,8 @@ MemoryCaptures/
 
 # Build output
 Builds/
+BuildLogs/
+.utmp/
 *.apk
 *.aab
 

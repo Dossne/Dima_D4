@@ -1,3 +1,59 @@
+## [OE-BUILD-001] build/visuals-and-apk | COMPLETED | 2026-04-02
+
+### context
+project: orbit-escape | engine: unity-6 (6000.4.0f1) | pipeline: urp-2d | platform: android
+
+### what_was_implemented
+- BuildApk (Assets/Editor/BuildApk.cs):
+    pattern: HeadlessBuildEntryPoint | SingleResponsibility
+    subscribes_to: []
+    fires: []
+    responsibility: "builds the Android release APK from Main.unity and ensures the output folder exists"
+- Main scene assembly (Assets/Scenes/Main.unity):
+    pattern: SingleSceneRuntimeAssembly | UIStatePanels
+    subscribes_to: []
+    fires: []
+    responsibility: "hosts the final runtime UI, gameplay managers, player, planet, and event wiring needed for the Android build"
+- Play/Restart binders (Assets/Scripts/UI/PlayButtonBinder.cs, Assets/Scripts/UI/RestartButtonBinder.cs):
+    pattern: UIBridge | ServiceOrchestration
+    subscribes_to: []
+    fires: []
+    responsibility: "bridge UI buttons to the game state orchestration layer without direct gameplay coupling"
+
+### files
+| action   | path                                       | notes                                           |
+|----------|--------------------------------------------|-------------------------------------------------|
+| CREATED  | Assets/Editor/BuildApk.cs                  | headless Android build entry point             |
+| CREATED  | Assets/Scripts/UI/PlayButtonBinder.cs      | play button bridge to GameStateManager         |
+| CREATED  | Assets/Scripts/UI/RestartButtonBinder.cs   | restart button bridge to GameStateManager      |
+| MODIFIED | Assets/Scenes/Main.unity                   | final scene wiring for release build           |
+| MODIFIED | Assets/Settings/UniversalRP.asset          | visuals/render pipeline tuning for final build |
+| MODIFIED | Assets/UniversalRenderPipelineGlobalSettings.asset | pipeline global settings for build      |
+| MODIFIED | ProjectSettings/EditorBuildSettings.asset   | release scene list updated                     |
+| MODIFIED | ProjectSettings/ProjectSettings.asset       | Android/player defaults kept aligned           |
+| MODIFIED | ProjectSettings/TagManager.asset            | final scene tags/layers support                |
+
+### architecture_decisions
+- kept the APK build path in a tiny editor-only entry point so the runtime scene code stays unaware of build concerns
+- used the existing single-scene UI panel pattern instead of introducing a second scene for menus, because the prototype flow needs fast iteration and simple state switching
+- left the build output at `Builds/OE_v0.1.apk` so future Android releases follow one predictable location
+
+### known_limitations
+- the build was verified through headless Unity batchmode rather than an interactive Editor playthrough
+- build artifacts in `Builds/` are intentionally not tracked by git
+
+### task_ref
+beads_id: OE-BUILD-001
+commit_title: feat(build): finalize Android APK build
+current_branch: feature/OE-BUILD-001-visuals-apk
+
+### project_state
+completed_tasks: [OE-SETUP-001, OE-CORE-001, OE-CORE-002, OE-PLAYER-001, OE-PLAYER-002, OE-PLAYER-003, OE-LEVEL-001, OE-LEVEL-002, OE-LEVEL-003, OE-INPUT-001, OE-STATE-001, OE-STATE-002, OE-UI-001, OE-UI-002, OE-UI-003, OE-UI-004, OE-FEEL-001, OE-AUDIO-001, OE-PLAYER-004, OE-PLAYER-005, OE-LEVEL-004, OE-BUILD-001]
+next_ready: none
+blocked: []
+remaining: 0 of 22 tasks
+current_branch: feature/OE-BUILD-001-visuals-apk
+
 ## [OE-LEVEL-004] level/AsteroidSpawner | COMPLETED | 2026-04-02
 
 ### context
