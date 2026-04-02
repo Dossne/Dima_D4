@@ -4,6 +4,42 @@
 <!-- Each entry written by the agent that completed the task -->
 <!-- Purpose: allows any new agent to understand project state without reading full codebase -->
 
+## [OE-CORE-001] event-bus/GameEvents | COMPLETED | 2026-04-02
+
+### context
+project: orbit-escape | engine: unity-6 (6000.4.0f1) | pipeline: urp-2d | platform: android
+
+### what_was_implemented
+- GameEvents (Assets/Scripts/Core/GameEvents.cs):
+    pattern: StaticEventBus | SingleResponsibility
+    subscribes_to: []
+    fires: [OnTap, OnGameStarted, OnScoreUpdated, OnLanding, OnPlanetReached, OnPlanetLanded, OnGameOver]
+    responsibility: "defines the project-wide event contract and invoke helpers for inter-script communication"
+
+### files
+| action   | path                              | notes                                                |
+|----------|-----------------------------------|------------------------------------------------------|
+| CREATED  | Assets/Scripts/Core/GameEvents.cs | static event bus with invoke helpers and reset method |
+| MODIFIED | CHANGELOG.md                      | recorded OE-CORE-001 completion and next task        |
+
+### architecture_decisions
+- added `OnPlanetLanded(Transform)` now because later tasks already rely on event-driven pivot handoff between `PlayerCollider` and `PlayerOrbitController`
+- added `ClearAllSubscribers()` early as a safety utility for restart/reset scenarios and future debugging
+
+### known_limitations
+- verified through Unity MCP console only; no runtime gameplay behavior has been exercised yet
+
+### task_ref
+beads_id: OE-CORE-001
+commit_title: feat(core): add GameEvents event bus
+current_branch: feature/OE-CORE-001-game-events
+
+### project_state
+completed_tasks: [OE-SETUP-001, OE-CORE-001]
+next_ready: OE-CORE-002
+blocked: [OE-PLAYER-001 (waiting for OE-CORE-002), OE-INPUT-001 (waiting for branch handoff), OE-BUILD-001 (waiting for upstream systems)]
+remaining: 20 of 22 tasks
+current_branch: feature/OE-CORE-001-game-events
 ## [OE-SETUP-001] project-config/android-build-settings | COMPLETED | 2026-04-02
 
 ### context
@@ -106,3 +142,4 @@ OE-BOOTSTRAP (manual)
 
 ### Next task
 OE-SETUP-001
+
