@@ -1,9 +1,11 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
 public class PlayerMovement : MonoBehaviour
 {
     [SerializeField] private float launchForce = 10f;
+
+    public float LaunchForce => launchForce;
 
     private Camera _mainCamera;
     private Rigidbody2D _rigidbody;

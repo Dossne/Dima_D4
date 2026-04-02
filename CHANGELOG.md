@@ -1,3 +1,40 @@
+## [OE-PLAYER-005] player/TrajectoryPredictor | COMPLETED | 2026-04-02
+
+### context
+project: orbit-escape | engine: unity-6 (6000.4.0f1) | pipeline: urp-2d | platform: android
+
+### what_was_implemented
+- TrajectoryPredictor (Assets/Scripts/Player/TrajectoryPredictor.cs):
+    pattern: PredictivePreview | EventDrivenUI
+    subscribes_to: [GameEvents.OnTap, GameEvents.OnGameStarted, GameEvents.OnPlanetLanded, GameEvents.OnGameOver]
+    fires: []
+    responsibility: "draws a 24-point preview line showing the current launch trajectory and hides/shows itself around flight state changes"
+
+### files
+| action   | path                                     | notes                                             |
+|----------|------------------------------------------|---------------------------------------------------|
+| CREATED  | Assets/Scripts/Player/TrajectoryPredictor.cs | launch preview line renderer with event wiring |
+| MODIFIED | Assets/Scripts/Player/PlayerMovement.cs  | exposed LaunchForce for predictor parity          |
+| MODIFIED | CHANGELOG.md                             | recorded OE-PLAYER-005 completion                |
+
+### architecture_decisions
+- exposed `PlayerMovement.LaunchForce` as a read-only property so preview length stays exactly aligned with the actual launch force instead of duplicating a magic number
+- kept the preview purely visual and event-driven; it does not attempt to simulate physics, only the immediate tangent launch path the player is about to choose
+
+### known_limitations
+- the preview is a straight tangent line, not a full physics arc; that matches the current orbital launch mechanic but can be expanded later if gravity or curve-based flight is introduced
+
+### task_ref
+beads_id: OE-PLAYER-005
+commit_title: feat(player): add TrajectoryPredictor
+current_branch: feature/OE-PLAYER-005-trajectory-predictor
+
+### project_state
+completed_tasks: [OE-SETUP-001, OE-CORE-001, OE-CORE-002, OE-PLAYER-001, OE-PLAYER-002, OE-PLAYER-003, OE-LEVEL-001, OE-LEVEL-002, OE-LEVEL-003, OE-INPUT-001, OE-STATE-001, OE-STATE-002, OE-UI-001, OE-UI-002, OE-UI-003, OE-UI-004, OE-FEEL-001, OE-AUDIO-001, OE-PLAYER-004, OE-PLAYER-005]
+next_ready: OE-LEVEL-004
+blocked: []
+remaining: 2 of 22 tasks
+current_branch: feature/OE-PLAYER-005-trajectory-predictor
 ## [OE-PLAYER-004] player/AsteroidMover | COMPLETED | 2026-04-02
 
 ### context
@@ -721,6 +758,7 @@ OE-BOOTSTRAP (manual)
 
 ### Next task
 OE-SETUP-001
+
 
 
 
