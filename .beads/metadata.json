@@ -1,0 +1,7 @@
+{
+  "database": "dolt",
+  "backend": "dolt",
+  "dolt_mode": "server",
+  "dolt_database": "Orbit_Escape",
+  "project_id": "666e8692-f094-4339-a078-7588727846fc"
+}
