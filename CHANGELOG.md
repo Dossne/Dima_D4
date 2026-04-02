@@ -1,3 +1,39 @@
+## [OE-UI-001] ui/UIMainMenu | COMPLETED | 2026-04-02
+
+### context
+project: orbit-escape | engine: unity-6 (6000.4.0f1) | pipeline: urp-2d | platform: android
+
+### what_was_implemented
+- UIMainMenu (Assets/Scripts/UI/UIMainMenu.cs):
+    pattern: SimpleUIPresenter | EventDrivenUI
+    subscribes_to: [GameEvents.OnGameStarted]
+    fires: [GameEvents.OnGameStarted]
+    responsibility: "owns the menu root visibility and starts gameplay from the Play button"
+
+### files
+| action   | path                            | notes                                          |
+|----------|---------------------------------|------------------------------------------------|
+| CREATED  | Assets/Scripts/UI/UIMainMenu.cs | start-menu presenter with Play button handler  |
+| MODIFIED | CHANGELOG.md                    | recorded OE-UI-001 completion and next task    |
+
+### architecture_decisions
+- allowed an optional `menuRoot` reference but defaulted to `gameObject` so the script works with either a dedicated panel child or the panel object itself
+- hid the menu both on button press and on `OnGameStarted` subscription so scene-driven start flows stay consistent even if the event is fired externally later
+
+### known_limitations
+- this script assumes scene wiring will assign the Play button to `OnPlayPressed`; it does not auto-bind UI events by code
+
+### task_ref
+beads_id: OE-UI-001
+commit_title: feat(ui): add UIMainMenu
+current_branch: feature/OE-UI-001-main-menu
+
+### project_state
+completed_tasks: [OE-SETUP-001, OE-CORE-001, OE-CORE-002, OE-PLAYER-001, OE-PLAYER-002, OE-PLAYER-003, OE-LEVEL-001, OE-LEVEL-002, OE-LEVEL-003, OE-INPUT-001, OE-STATE-001, OE-STATE-002, OE-UI-001]
+next_ready: OE-UI-002
+blocked: [OE-BUILD-001 (waiting for upstream systems)]
+remaining: 9 of 22 tasks
+current_branch: feature/OE-UI-001-main-menu
 ## [OE-STATE-002] managers/ScoreManager | COMPLETED | 2026-04-02
 
 ### context
@@ -505,6 +541,7 @@ OE-BOOTSTRAP (manual)
 
 ### Next task
 OE-SETUP-001
+
 
 
 
