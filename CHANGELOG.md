@@ -1,3 +1,39 @@
+## [OE-PLAYER-004] player/AsteroidMover | COMPLETED | 2026-04-02
+
+### context
+project: orbit-escape | engine: unity-6 (6000.4.0f1) | pipeline: urp-2d | platform: android
+
+### what_was_implemented
+- AsteroidMover (Assets/Scripts/Player/AsteroidMover.cs):
+    pattern: ProjectileMotion | PlayerHoming
+    subscribes_to: []
+    fires: []
+    responsibility: "initializes asteroid velocity toward the current player, applies soft homing, and culls the object when it leaves the camera bounds"
+
+### files
+| action   | path                                 | notes                                      |
+|----------|--------------------------------------|--------------------------------------------|
+| CREATED  | Assets/Scripts/Player/AsteroidMover.cs | asteroid movement logic with Init(float) |
+| MODIFIED | CHANGELOG.md                         | recorded OE-PLAYER-004 completion         |
+
+### architecture_decisions
+- used `PlayerRegistry.Player` instead of tag lookups so asteroid movement stays aligned with the existing registry-based architecture
+- kept the movement loop self-contained with viewport culling so spawned asteroids do not need extra lifetime bookkeeping elsewhere
+
+### known_limitations
+- the script currently assumes a spawner will call `Init(float)` after creation; it does not auto-bootstrap its own speed
+
+### task_ref
+beads_id: OE-PLAYER-004
+commit_title: feat(player): add AsteroidMover
+current_branch: feature/OE-PLAYER-004-asteroid-mover
+
+### project_state
+completed_tasks: [OE-SETUP-001, OE-CORE-001, OE-CORE-002, OE-PLAYER-001, OE-PLAYER-002, OE-PLAYER-003, OE-LEVEL-001, OE-LEVEL-002, OE-LEVEL-003, OE-INPUT-001, OE-STATE-001, OE-STATE-002, OE-UI-001, OE-UI-002, OE-UI-003, OE-UI-004, OE-FEEL-001, OE-AUDIO-001, OE-PLAYER-004]
+next_ready: OE-PLAYER-005
+blocked: [OE-BUILD-001 (waiting for upstream systems)]
+remaining: 3 of 22 tasks
+current_branch: feature/OE-PLAYER-004-asteroid-mover
 ## [OE-AUDIO-001] managers/AudioManager | COMPLETED | 2026-04-02
 
 ### context
@@ -685,6 +721,7 @@ OE-BOOTSTRAP (manual)
 
 ### Next task
 OE-SETUP-001
+
 
 
 
