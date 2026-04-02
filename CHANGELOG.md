@@ -4,6 +4,42 @@
 <!-- Each entry written by the agent that completed the task -->
 <!-- Purpose: allows any new agent to understand project state without reading full codebase -->
 
+## [OE-PLAYER-003] player/PlayerCollider | COMPLETED | 2026-04-02
+
+### context
+project: orbit-escape | engine: unity-6 (6000.4.0f1) | pipeline: urp-2d | platform: android
+
+### what_was_implemented
+- PlayerCollider (Assets/Scripts/Player/PlayerCollider.cs):
+    pattern: CollisionEventBridge | SingleResponsibility
+    subscribes_to: []
+    fires: [GameEvents.PlanetLanded, GameEvents.Landing, GameEvents.PlanetReached, GameEvents.GameOver]
+    responsibility: "translates trigger collisions into gameplay events without owning score, orbit state, or movement state"
+
+### files
+| action   | path                                    | notes                                               |
+|----------|-----------------------------------------|-----------------------------------------------------|
+| CREATED  | Assets/Scripts/Player/PlayerCollider.cs | collision-only player trigger bridge                |
+| MODIFIED | CHANGELOG.md                            | recorded OE-PLAYER-003 completion and next task     |
+
+### architecture_decisions
+- kept collision handling fully event-driven so score counting, pivot updates, and juice remain owned by their future dedicated systems
+- preserved event order for planet contact: `PlanetLanded` first, then `Landing`, then `PlanetReached`
+
+### known_limitations
+- collider logic is compile-verified through Unity MCP console, but scene tags/layers are not wired yet, so runtime trigger flow still needs in-editor validation
+
+### task_ref
+beads_id: OE-PLAYER-003
+commit_title: feat(player): add PlayerCollider
+current_branch: feature/OE-PLAYER-003-player-collider
+
+### project_state
+completed_tasks: [OE-SETUP-001, OE-CORE-001, OE-CORE-002, OE-PLAYER-001, OE-PLAYER-002, OE-PLAYER-003]
+next_ready: OE-LEVEL-001
+blocked: [OE-LEVEL-002 (waiting for OE-LEVEL-001 and OE-PLAYER-003), OE-PLAYER-005 (waiting for orbit/launch loop context), OE-BUILD-001 (waiting for upstream systems)]
+remaining: 16 of 22 tasks
+current_branch: feature/OE-PLAYER-003-player-collider
 ## [OE-PLAYER-002] player/PlayerMovement | COMPLETED | 2026-04-02
 
 ### context
@@ -252,6 +288,7 @@ OE-BOOTSTRAP (manual)
 
 ### Next task
 OE-SETUP-001
+
 
 
 
