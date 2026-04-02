@@ -1,3 +1,39 @@
+## [OE-UI-002] ui/UITapHint | COMPLETED | 2026-04-02
+
+### context
+project: orbit-escape | engine: unity-6 (6000.4.0f1) | pipeline: urp-2d | platform: android
+
+### what_was_implemented
+- UITapHint (Assets/Scripts/UI/UITapHint.cs):
+    pattern: OnboardingPrompt | EventDrivenUI
+    subscribes_to: [GameEvents.OnGameStarted, GameEvents.OnTap]
+    fires: []
+    responsibility: "shows a one-time pulsing TAP prompt after game start and hides permanently on first input"
+
+### files
+| action   | path                           | notes                                         |
+|----------|--------------------------------|-----------------------------------------------|
+| CREATED  | Assets/Scripts/UI/UITapHint.cs | one-shot tap onboarding prompt with pulse     |
+| MODIFIED | CHANGELOG.md                   | recorded OE-UI-002 completion and next task   |
+
+### architecture_decisions
+- defaulted `hintRoot` to the component game object so the script remains easy to wire on either a panel object or a nested label holder
+- used `Time.unscaledTime` for pulsing so the hint stays visually stable regardless of later time-scale changes
+
+### known_limitations
+- requires scene wiring for `CanvasGroup` and optional TMP label reference; the script does not auto-add missing UI components
+
+### task_ref
+beads_id: OE-UI-002
+commit_title: feat(ui): add UITapHint
+current_branch: feature/OE-UI-002-tap-hint
+
+### project_state
+completed_tasks: [OE-SETUP-001, OE-CORE-001, OE-CORE-002, OE-PLAYER-001, OE-PLAYER-002, OE-PLAYER-003, OE-LEVEL-001, OE-LEVEL-002, OE-LEVEL-003, OE-INPUT-001, OE-STATE-001, OE-STATE-002, OE-UI-001, OE-UI-002]
+next_ready: OE-UI-003
+blocked: [OE-BUILD-001 (waiting for upstream systems)]
+remaining: 8 of 22 tasks
+current_branch: feature/OE-UI-002-tap-hint
 ## [OE-UI-001] ui/UIMainMenu | COMPLETED | 2026-04-02
 
 ### context
@@ -541,6 +577,7 @@ OE-BOOTSTRAP (manual)
 
 ### Next task
 OE-SETUP-001
+
 
 
 
