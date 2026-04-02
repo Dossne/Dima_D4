@@ -4,6 +4,42 @@
 <!-- Each entry written by the agent that completed the task -->
 <!-- Purpose: allows any new agent to understand project state without reading full codebase -->
 
+## [OE-CORE-002] core/PlayerRegistry | COMPLETED | 2026-04-02
+
+### context
+project: orbit-escape | engine: unity-6 (6000.4.0f1) | pipeline: urp-2d | platform: android
+
+### what_was_implemented
+- PlayerRegistry (Assets/Scripts/Core/PlayerRegistry.cs):
+    pattern: StaticRegistry | SingleResponsibility
+    subscribes_to: []
+    fires: []
+    responsibility: "stores the active player transform so gameplay systems can query it without scene search APIs"
+
+### files
+| action   | path                                  | notes                                      |
+|----------|---------------------------------------|--------------------------------------------|
+| CREATED  | Assets/Scripts/Core/PlayerRegistry.cs | static player transform registry           |
+| MODIFIED | CHANGELOG.md                          | recorded OE-CORE-002 completion and next task |
+
+### architecture_decisions
+- keep the registry write API minimal: `Register(Transform)` and `Unregister()` only, so future runtime ownership stays with `PlayerOrbitController`
+- avoid any GameEvents coupling here because the registry is intended as a low-level utility used by independent systems
+
+### known_limitations
+- console was checked through Unity MCP and showed no compile errors, but gameplay usage is not exercised yet
+
+### task_ref
+beads_id: OE-CORE-002
+commit_title: feat(core): add PlayerRegistry
+current_branch: feature/OE-CORE-002-player-registry
+
+### project_state
+completed_tasks: [OE-SETUP-001, OE-CORE-001, OE-CORE-002]
+next_ready: OE-PLAYER-001
+blocked: [OE-PLAYER-002 (waiting for OE-PLAYER-001), OE-LEVEL-002 (waiting for OE-LEVEL-001 and OE-PLAYER-003), OE-BUILD-001 (waiting for upstream systems)]
+remaining: 19 of 22 tasks
+current_branch: feature/OE-CORE-002-player-registry
 ## [OE-CORE-001] event-bus/GameEvents | COMPLETED | 2026-04-02
 
 ### context
@@ -142,4 +178,5 @@ OE-BOOTSTRAP (manual)
 
 ### Next task
 OE-SETUP-001
+
 
