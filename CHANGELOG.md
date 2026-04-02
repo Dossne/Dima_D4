@@ -4,6 +4,42 @@
 <!-- Each entry written by the agent that completed the task -->
 <!-- Purpose: allows any new agent to understand project state without reading full codebase -->
 
+## [OE-INPUT-001] input/InputManager | COMPLETED | 2026-04-02
+
+### context
+project: orbit-escape | engine: unity-6 (6000.4.0f1) | pipeline: urp-2d | platform: android
+
+### what_was_implemented
+- InputManager (Assets/Scripts/Managers/InputManager.cs):
+    pattern: EventGatedInput | SingleResponsibility
+    subscribes_to: [GameEvents.OnGameStarted, GameEvents.OnGameOver]
+    fires: [GameEvents.OnTap]
+    responsibility: "forwards legacy mouse/touch input into tap events only while gameplay is active"
+
+### files
+| action   | path                                  | notes                                           |
+|----------|---------------------------------------|-------------------------------------------------|
+| CREATED  | Assets/Scripts/Managers/InputManager.cs | legacy input bridge with game-active guard     |
+| MODIFIED | CHANGELOG.md                          | recorded OE-INPUT-001 completion and next task  |
+
+### architecture_decisions
+- used named delegates for game-state subscriptions so teardown remains safe across restarts
+- kept input source intentionally narrow to legacy mouse/touch because the master document explicitly requests that path for the prototype
+
+### known_limitations
+- no UI pointer filtering yet; the gameplay guard prevents most accidental taps, but proper UI input separation will rely on scene wiring later
+
+### task_ref
+beads_id: OE-INPUT-001
+commit_title: feat(input): add InputManager
+current_branch: feature/OE-INPUT-001-input-manager
+
+### project_state
+completed_tasks: [OE-SETUP-001, OE-CORE-001, OE-CORE-002, OE-PLAYER-001, OE-PLAYER-002, OE-PLAYER-003, OE-LEVEL-001, OE-LEVEL-002, OE-LEVEL-003, OE-INPUT-001]
+next_ready: OE-STATE-001
+blocked: [OE-BUILD-001 (waiting for upstream systems)]
+remaining: 12 of 22 tasks
+current_branch: feature/OE-INPUT-001-input-manager
 ## [OE-LEVEL-003] level/CameraFollower | COMPLETED | 2026-04-02
 
 ### context
@@ -397,6 +433,7 @@ OE-BOOTSTRAP (manual)
 
 ### Next task
 OE-SETUP-001
+
 
 
 
