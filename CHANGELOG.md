@@ -1,3 +1,39 @@
+## [OE-UI-004] ui/UIGameOver | IN_PROGRESS | 2026-04-02
+
+### context
+project: orbit-escape | engine: unity-6 (6000.4.0f1) | pipeline: urp-2d | platform: android
+
+### what_was_implemented
+- UIGameOver (Assets/Scripts/UI/UIGameOver.cs):
+    pattern: GameOverPresenter | EventDrivenUI
+    subscribes_to: [GameEvents.OnGameStarted, GameEvents.OnGameOver, GameEvents.OnScoreUpdated]
+    fires: []
+    responsibility: "shows the game-over panel, displays current/high scores, and restarts the scene through GameStateManager"
+
+### files
+| action   | path                            | notes                                          |
+|----------|---------------------------------|------------------------------------------------|
+| CREATED  | Assets/Scripts/UI/UIGameOver.cs | game-over presenter with restart button flow   |
+| MODIFIED | CHANGELOG.md                    | recorded OE-UI-004 work in progress           |
+
+### architecture_decisions
+- delayed score refresh by one frame after `OnGameOver` so `ScoreManager` can finish persisting the new high score before the panel reads it
+- kept `OnRestartPressed` routed through `GameStateManager` with a scene-index fallback only if the manager reference is missing, which preserves the intended architecture while staying resilient in the editor
+
+### known_limitations
+- text layout is intentionally simple and assumes scene wiring will assign the TMP references; auto-binding can be layered later
+
+### task_ref
+beads_id: OE-UI-004
+commit_title: feat(ui): add UIGameOver
+current_branch: feature/OE-UI-004-game-over
+
+### project_state
+completed_tasks: [OE-SETUP-001, OE-CORE-001, OE-CORE-002, OE-PLAYER-001, OE-PLAYER-002, OE-PLAYER-003, OE-LEVEL-001, OE-LEVEL-002, OE-LEVEL-003, OE-INPUT-001, OE-STATE-001, OE-STATE-002, OE-UI-001, OE-UI-002, OE-UI-003]
+next_ready: OE-FEEL-001
+blocked: [OE-UI-004 (in progress), OE-BUILD-001 (waiting for upstream systems)]
+remaining: 7 of 22 tasks
+current_branch: feature/OE-UI-004-game-over
 ## [OE-UI-003] ui/UIHUD | COMPLETED | 2026-04-02
 
 ### context
@@ -613,6 +649,7 @@ OE-BOOTSTRAP (manual)
 
 ### Next task
 OE-SETUP-001
+
 
 
 
