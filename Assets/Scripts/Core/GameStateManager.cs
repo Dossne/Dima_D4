@@ -9,12 +9,12 @@ public class GameStateManager : MonoBehaviour
     [SerializeField] private float deathSlowMotionDuration = 0.45f;
 
     private bool _isDead;
+    private bool _isPaused;
     private Coroutine _gameOverRoutine;
 
     private void Awake()
     {
         Time.timeScale = 1f;
-
         GameEvents.OnGameStarted += HandleGameStarted;
         GameEvents.OnGameOver += HandleGameOver;
     }
@@ -25,30 +25,40 @@ public class GameStateManager : MonoBehaviour
         GameEvents.OnGameOver -= HandleGameOver;
     }
 
-    public void RestartGame()
+    public void TogglePause()
     {
-        Time.timeScale = 1f;
-        _isDead = false;
+        SetPaused(!_isPaused);
+    }
 
-        if (_gameOverRoutine != null)
+    public void SetPaused(bool isPaused)
+    {
+        if (_isDead || _isPaused == isPaused)
         {
-            StopCoroutine(_gameOverRoutine);
-            _gameOverRoutine = null;
+            return;
         }
 
+        _isPaused = isPaused;
+        Time.timeScale = _isPaused ? 0f : 1f;
+        GameEvents.PauseChanged(_isPaused);
+    }
+
+    public void RestartGame()
+    {
+        StopGameOverRoutine();
+        _isDead = false;
+        _isPaused = false;
+        Time.timeScale = 1f;
+        GameEvents.ClearAllSubscribers();
         SceneManager.LoadScene(0);
     }
 
     private void HandleGameStarted()
     {
+        StopGameOverRoutine();
         _isDead = false;
+        _isPaused = false;
         Time.timeScale = 1f;
-
-        if (_gameOverRoutine != null)
-        {
-            StopCoroutine(_gameOverRoutine);
-            _gameOverRoutine = null;
-        }
+        GameEvents.PauseChanged(false);
     }
 
     private void HandleGameOver()
@@ -58,7 +68,9 @@ public class GameStateManager : MonoBehaviour
             return;
         }
 
+        StopGameOverRoutine();
         _isDead = true;
+        _isPaused = false;
         _gameOverRoutine = StartCoroutine(HandleGameOverSequence());
     }
 
@@ -67,6 +79,17 @@ public class GameStateManager : MonoBehaviour
         Time.timeScale = deathSlowMotionScale;
         yield return new WaitForSecondsRealtime(deathSlowMotionDuration);
         Time.timeScale = 0f;
+        _gameOverRoutine = null;
+    }
+
+    private void StopGameOverRoutine()
+    {
+        if (_gameOverRoutine == null)
+        {
+            return;
+        }
+
+        StopCoroutine(_gameOverRoutine);
         _gameOverRoutine = null;
     }
 }

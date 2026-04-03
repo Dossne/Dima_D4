@@ -1,16 +1,21 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 public class PlayerOrbitController : MonoBehaviour
 {
-    [SerializeField] private float orbitSpeed = 120f;
+    [SerializeField] private float baseOrbitSpeed = 120f;
+    [SerializeField] private float speedPerPlanet = 2f;   // +2 deg/s per planet after ramp start
+    [SerializeField] private int speedRampStart = 15;     // score at which speed ramp begins
+
     public Transform currentPivot;
 
-    private Behaviour _playerMovement;
+    private PlayerMovement _playerMovement;
+    private float _currentSpeed;
 
     private void Awake()
     {
         PlayerRegistry.Register(transform);
-        _playerMovement = GetComponent("PlayerMovement") as Behaviour;
+        _playerMovement = GetComponent<PlayerMovement>();
+        _currentSpeed = baseOrbitSpeed;
         GameEvents.OnTap += HandleTap;
         GameEvents.OnScoreUpdated += HandleScoreUpdated;
         GameEvents.OnGameStarted += HandleGameStarted;
@@ -28,29 +33,33 @@ public class PlayerOrbitController : MonoBehaviour
 
     private void Update()
     {
-        if (!enabled || currentPivot == null)
-        {
-            return;
-        }
-
-        transform.RotateAround(currentPivot.position, Vector3.forward, orbitSpeed * Time.deltaTime);
+        if (!enabled || currentPivot == null) return;
+        transform.RotateAround(currentPivot.position, Vector3.forward, _currentSpeed * Time.deltaTime);
     }
 
     private void HandleTap()
     {
+        if (currentPivot == null) return;
         enabled = false;
         SetMovementEnabled(true);
+        _playerMovement?.Launch();
     }
 
-    private void HandleScoreUpdated(int _)
+    private void HandleScoreUpdated(int score)
     {
+        _currentSpeed = score > speedRampStart
+            ? baseOrbitSpeed + (score - speedRampStart) * speedPerPlanet
+            : baseOrbitSpeed;
+
         enabled = true;
         SetMovementEnabled(false);
     }
 
     private void HandleGameStarted()
     {
+        _currentSpeed = baseOrbitSpeed;
         enabled = true;
+        SetMovementEnabled(false);
     }
 
     private void HandlePlanetLanded(Transform planet)

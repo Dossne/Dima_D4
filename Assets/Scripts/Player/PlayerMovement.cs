@@ -4,53 +4,89 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
     [SerializeField] private float launchForce = 10f;
+    [SerializeField] private float maxFlightDistance = 12f;
 
     public float LaunchForce => launchForce;
 
-    private Camera _mainCamera;
     private Rigidbody2D _rigidbody;
     private PlayerOrbitController _orbitController;
+    private Camera _camera;
+    private bool _hasLaunched;
+    private Vector3 _launchOrigin;
 
     private void Awake()
     {
-        _mainCamera = Camera.main;
         _rigidbody = GetComponent<Rigidbody2D>();
         _orbitController = GetComponent<PlayerOrbitController>();
+        _camera = Camera.main;
         _rigidbody.gravityScale = 0f;
         _rigidbody.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
+        _rigidbody.interpolation = RigidbodyInterpolation2D.Interpolate;
     }
 
     private void OnEnable()
     {
-        if (_orbitController == null || _orbitController.currentPivot == null)
+        _hasLaunched = false;
+        SetOrbitMode();
+    }
+
+    private void OnDisable()
+    {
+        ResetBody();
+        _hasLaunched = false;
+    }
+
+    private void Update()
+    {
+        if (_camera == null || !_hasLaunched) return;
+        Vector3 vp = _camera.WorldToViewportPoint(transform.position);
+        bool outX = vp.x < -0.2f || vp.x > 1.2f;
+        bool outY = vp.y < -0.1f || vp.y > 1.1f;
+        bool tooFarFromLaunch = Vector3.Distance(transform.position, _launchOrigin) > maxFlightDistance;
+        if (outX || outY || tooFarFromLaunch)
+            GameEvents.GameOver();
+    }
+
+    public void Launch()
+    {
+        if (_hasLaunched || _orbitController == null || _orbitController.currentPivot == null)
         {
             return;
         }
 
         Vector2 offset = transform.position - _orbitController.currentPivot.position;
         Vector2 tangent = Vector2.Perpendicular(offset.normalized);
+        if (tangent == Vector2.zero)
+        {
+            tangent = Vector2.right;
+        }
+
+        _launchOrigin = transform.position;
+        SetDynamicMode();
         _rigidbody.AddForce(tangent * launchForce, ForceMode2D.Impulse);
+        _hasLaunched = true;
     }
 
-    private void OnDisable()
+    private void SetOrbitMode()
     {
-        if (_rigidbody != null)
-        {
-            _rigidbody.linearVelocity = Vector2.zero;
-        }
+        if (_rigidbody == null) return;
+        _rigidbody.bodyType = RigidbodyType2D.Kinematic;
+        _rigidbody.linearVelocity = Vector2.zero;
+        _rigidbody.angularVelocity = 0f;
     }
 
-    private void Update()
+    private void SetDynamicMode()
     {
-        if (_mainCamera == null)
-        {
-            return;
-        }
+        if (_rigidbody == null) return;
+        _rigidbody.bodyType = RigidbodyType2D.Dynamic;
+        _rigidbody.linearVelocity = Vector2.zero;
+        _rigidbody.angularVelocity = 0f;
+    }
 
-        Vector3 viewportPoint = _mainCamera.WorldToViewportPoint(transform.position);
-        if (viewportPoint.x < 0f || viewportPoint.x > 1f || viewportPoint.y < 0f || viewportPoint.y > 1f)
-        {
-            GameEvents.GameOver();
-        }
+    private void ResetBody()
+    {
+        if (_rigidbody == null) return;
+        _rigidbody.linearVelocity = Vector2.zero;
+        _rigidbody.angularVelocity = 0f;
     }
 }

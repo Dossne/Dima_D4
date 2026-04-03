@@ -1,3 +1,85 @@
+## [OE-BUG-FIX-001] core-gameplay-bugs | COMPLETED | 2026-04-02
+
+### context
+project: orbit-escape | engine: unity-6 (6000.4.0f1) | pipeline: urp-2d | platform: android
+
+### what_was_implemented
+- LevelGenerator (Assets/Scripts/Level/LevelGenerator.cs):
+    responsibility: "added GameEvents.PlanetLanded() call on first planet spawn so player gets orbit pivot at game start"
+- Planet (Assets/Scripts/Level/Planet.cs):
+    responsibility: "removed runtime LineRenderer orbit ring — now editor-only gizmo per spec; ring was making planets look oversized"
+- PlayerMovement (Assets/Scripts/Player/PlayerMovement.cs):
+    responsibility: "added viewport boundary death check in Update() — fires GameOver when player flies off screen"
+- PlayerOrbitController (Assets/Scripts/Player/PlayerOrbitController.cs):
+    responsibility: "added speed ramp: baseOrbitSpeed + speedPerPlanet * (score - speedRampStart) after score 15"
+- AsteroidMover (Assets/Scripts/Player/AsteroidMover.cs):
+    responsibility: "rewritten to use transform.Translate + visual rotation per ТЗ spec; sets RB to Kinematic to avoid physics conflict"
+- GameEvents (Assets/Scripts/Core/GameEvents.cs):
+    responsibility: "added missing OnNearMiss event per spec"
+- GameStateManager (Assets/Scripts/Core/GameStateManager.cs):
+    responsibility: "added ClearAllSubscribers() before LoadScene in RestartGame to prevent dead subscription accumulation"
+- OrbitronFontBootstrap (Assets/Editor/OrbitronFontBootstrap.cs):
+    responsibility: "fixed CS0200 compile error (sourceFontFile read-only); added Fix TMP Fonts In Scene menu command that assigns font to all TMP components"
+
+### files
+| action   | path                                          | notes                                              |
+|----------|-----------------------------------------------|----------------------------------------------------|
+| MODIFIED | Assets/Scripts/Level/LevelGenerator.cs        | added PlanetLanded() on first spawn — critical fix |
+| MODIFIED | Assets/Scripts/Level/Planet.cs                | removed runtime orbit ring, editor-only gizmos     |
+| MODIFIED | Assets/Scripts/Player/PlayerMovement.cs       | added viewport death check in Update()             |
+| MODIFIED | Assets/Scripts/Player/PlayerOrbitController.cs| added speed ramp fields and UpdateSpeed logic      |
+| MODIFIED | Assets/Scripts/Player/AsteroidMover.cs        | rewritten: Translate+Rotate, no RB velocity        |
+| MODIFIED | Assets/Scripts/Core/GameEvents.cs             | added OnNearMiss event + NearMiss() invoker        |
+| MODIFIED | Assets/Scripts/Core/GameStateManager.cs       | added ClearAllSubscribers() before scene reload    |
+| MODIFIED | Assets/Editor/OrbitronFontBootstrap.cs        | fixed CS0200, added Fix TMP Fonts In Scene menu    |
+
+### architecture_decisions
+- AsteroidMover uses transform.Translate (not Rigidbody velocity) per ТЗ spec — avoids Kinematic RB ignoring velocity bug
+- Planet orbit ring removed from runtime — was visual noise and made planets appear 3x their actual size
+- NearMiss event added to GameEvents to complete the spec contract used by AsteroidMover
+
+### known_limitations
+- TMP fonts still need manual step: Orbit Escape → Fix TMP Fonts In Scene → Ctrl+S after compilation
+- Unity MCP For Unity configured for Claude Code but needs session restart to load tools
+- "CurrentPlanet" pre-placed in scene may conflict with LevelGenerator dynamic spawning — investigate
+
+### task_ref
+beads_id: OE-BUG-FIX-001
+commit_title: fix(core): fix orbit pivot, planet ring, asteroid movement, viewport death, speed ramp
+current_branch: feature/OE-BUILD-001-visuals-apk
+
+### project_state
+completed_tasks: [OE-SETUP-001, OE-CORE-001, OE-CORE-002, OE-PLAYER-001, OE-PLAYER-002, OE-PLAYER-003, OE-LEVEL-001, OE-LEVEL-002, OE-LEVEL-003, OE-INPUT-001, OE-STATE-001, OE-STATE-002, OE-UI-001, OE-UI-002, OE-UI-003, OE-UI-004, OE-FEEL-001, OE-AUDIO-001, OE-PLAYER-004, OE-PLAYER-005, OE-LEVEL-004, OE-BUILD-001, OE-BUG-FIX-001]
+next_ready: TMP font fix (manual) + Unity MCP session restart
+blocked: []
+remaining: 0 of 22 tasks + bugfix pass
+current_branch: feature/OE-BUILD-001-visuals-apk
+
+## [OE-TMP-RECOVERY] orbitron-tmp-font-bootstrap | BLOCKED | 2026-04-02
+
+### context
+project: orbit-escape | engine: unity-6 (6000.4.0f1) | pipeline: urp-2d | platform: android
+
+### what_was_attempted
+- OrbitronFontBootstrap (Assets/Editor/OrbitronFontBootstrap.cs):
+    responsibility: "tries to generate Orbitron TMP font assets automatically and assign them as the TMP default font"
+
+### current_blocker
+- Orbitron SDF assets still serialize without material / source font references, so TextMeshProUGUI stays on Missing TMP_FontAsset in Main.unity
+- console compile issue `GlyphRenderMode` was fixed, but the font asset generation path is still not producing a valid serialized TMP asset
+- scene UI text is therefore still unreadable in editor/runtime
+
+### files
+| action   | path                                       | notes                                         |
+|----------|--------------------------------------------|-----------------------------------------------|
+| MODIFIED | Assets/Editor/OrbitronFontBootstrap.cs     | attempted TMP font asset recovery             |
+| MODIFIED | Assets/Fonts/Orbitron-Regular SDF.asset    | regenerated, still missing serialized refs    |
+| MODIFIED | Assets/Fonts/Orbitron-Bold SDF.asset       | regenerated, still missing serialized refs    |
+
+### handoff
+- next step for the incoming agent: inspect TMP asset generation/import path, or fall back to explicit working TMP font assignment so text becomes visible again
+- user request: stop here and hand off to Claude
+
 ## [OE-BUILD-001] build/visuals-and-apk | COMPLETED | 2026-04-02
 
 ### context

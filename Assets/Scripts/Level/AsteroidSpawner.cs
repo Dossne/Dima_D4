@@ -5,6 +5,7 @@ public class AsteroidSpawner : MonoBehaviour
     [SerializeField] private AsteroidMover asteroidPrefab;
     [SerializeField] private float baseSpeed = 4f;
     [SerializeField] private float viewportMargin = 0.12f;
+    [SerializeField] private float planetSafetyDistance = 4f;
     [SerializeField] private int safeEdgeAttempts = 5;
 
     private Camera _mainCamera;
@@ -131,7 +132,21 @@ public class AsteroidSpawner : MonoBehaviour
             return true;
         }
 
-        return Vector2.Angle(asteroidDirection, planetDirection) > 60f;
+        if (Vector2.Angle(asteroidDirection, planetDirection) <= 60f)
+        {
+            return false;
+        }
+
+        if (_orbitController != null && _orbitController.currentPivot != null)
+        {
+            float clearance = planetSafetyDistance;
+            if (Vector2.Distance(candidate, _orbitController.currentPivot.position) < clearance)
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private Vector3 GetPlanetDirection()

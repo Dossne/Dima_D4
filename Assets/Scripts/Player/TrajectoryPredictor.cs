@@ -6,8 +6,8 @@ public class TrajectoryPredictor : MonoBehaviour
 {
     [SerializeField] private int previewPointCount = 24;
     [SerializeField] private float previewDistanceMultiplier = 0.75f;
-    [SerializeField] private Color startColor = new(0f, 1f, 1f, 0.6f);
-    [SerializeField] private Color endColor = new(0f, 1f, 1f, 0f);
+    [SerializeField] private Color startColor = new(0.6f, 0.32f, 1f, 0.8f);
+    [SerializeField] private Color endColor = new(0.6f, 0.32f, 1f, 0f);
     [SerializeField] private float lineWidth = 0.04f;
 
     private LineRenderer _lineRenderer;
@@ -156,3 +156,4 @@ public class TrajectoryPredictor : MonoBehaviour
         return _orbitController != null && _orbitController.currentPivot != null;
     }
 }
+

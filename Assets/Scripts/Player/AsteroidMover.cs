@@ -1,21 +1,18 @@
 using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody2D))]
 public class AsteroidMover : MonoBehaviour
 {
     [SerializeField] private float homingStrength = 1.2f;
-    [SerializeField] private float viewportCullMargin = 0.3f;
 
-    private Rigidbody2D _rigidbody;
+    private Vector2 _velocity;
     private Transform _player;
     private float _speed;
-    private bool _isInitialized;
 
     private void Awake()
     {
-        _rigidbody = GetComponent<Rigidbody2D>();
-        _rigidbody.gravityScale = 0f;
-        _rigidbody.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
+        // Disable physics if Rigidbody2D exists — movement handled via transform
+        var rb = GetComponent<Rigidbody2D>();
+        if (rb != null) rb.bodyType = RigidbodyType2D.Kinematic;
     }
 
     public void Init(float speed)
@@ -23,47 +20,46 @@ public class AsteroidMover : MonoBehaviour
         _speed = speed;
         _player = PlayerRegistry.Player;
 
-        if (_player == null)
-        {
-            return;
-        }
+        Vector2 toPlayer = _player != null
+            ? ((Vector2)_player.position - (Vector2)transform.position).normalized
+            : Vector2.up;
 
-        Vector2 direction = ((Vector2)(_player.position - transform.position)).normalized;
-        if (direction == Vector2.zero)
-        {
-            direction = Vector2.up;
-        }
-
-        _rigidbody.linearVelocity = direction * _speed;
-        _isInitialized = true;
+        _velocity = toPlayer * _speed;
+        transform.rotation = Quaternion.Euler(0, 0, Random.Range(0f, 360f));
+        Destroy(gameObject, 10f);
     }
+
+    private bool _nearMissFired;
 
     private void Update()
     {
-        if (!_isInitialized || _player == null)
+        if (_player != null)
         {
-            return;
+            Vector2 toPlayer = ((Vector2)_player.position - (Vector2)transform.position).normalized;
+            _velocity = Vector2.Lerp(_velocity.normalized, toPlayer, Time.deltaTime * homingStrength) * _speed;
+
+            float dist = Vector2.Distance(transform.position, _player.position);
+            if (dist < 0.5f && dist > 0.15f && !_nearMissFired)
+            {
+                _nearMissFired = true;
+                GameEvents.NearMiss();
+            }
+            else if (dist >= 0.5f)
+            {
+                _nearMissFired = false;
+            }
         }
 
-        if (IsOutsideViewport())
+        transform.Translate(_velocity * Time.deltaTime, Space.World);
+        transform.Rotate(0, 0, 80 * Time.deltaTime);
+
+        // Destroy if far outside viewport
+        Camera cam = Camera.main;
+        if (cam != null)
         {
-            Destroy(gameObject);
-            return;
+            Vector3 vp = cam.WorldToViewportPoint(transform.position);
+            if (vp.x < -0.3f || vp.x > 1.3f || vp.y < -0.3f || vp.y > 1.3f)
+                Destroy(gameObject);
         }
-
-        Vector2 desiredVelocity = ((Vector2)(_player.position - transform.position)).normalized * _speed;
-        _rigidbody.linearVelocity = Vector2.Lerp(_rigidbody.linearVelocity, desiredVelocity, homingStrength * Time.deltaTime);
-    }
-
-    private bool IsOutsideViewport()
-    {
-        Camera mainCamera = Camera.main;
-        if (mainCamera == null)
-        {
-            return false;
-        }
-
-        Vector3 viewportPosition = mainCamera.WorldToViewportPoint(transform.position);
-        return viewportPosition.x < -viewportCullMargin || viewportPosition.x > 1f + viewportCullMargin || viewportPosition.y < -viewportCullMargin || viewportPosition.y > 1f + viewportCullMargin;
     }
 }
