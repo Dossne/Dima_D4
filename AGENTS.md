@@ -3,11 +3,13 @@
 ## ON EVERY SESSION START — do this before anything else
 
 1. `cat CHANGELOG.md` — прочти историю: что сделано, что открыто, заметки предыдущего агента
-2. `bd ready --json` — найди следующую незаблокированную задачу (OE-MODULE-NNN)
-3. `repomix --output .repomix-snapshot.txt --ignore "*.meta,*.unity,Library/**,Temp/**,obj/**"`
-4. Прочитай `.repomix-snapshot.txt` — пойми текущее состояние кода
-5. `bd update <id> --claim` — возьми задачу в работу
-6. Приступай
+2. `cat Docs/DesignDialogueLog.md` — прочти актуальный дизайн-лог: договорённости, open questions, future-facing идеи
+3. `cat Docs/ImplementationRoadmapV2.md` — пойми текущий порядок реализации и чего НЕ надо делать преждевременно
+4. `bd ready --json` — найди следующую незаблокированную задачу (OE-MODULE-NNN)
+5. `repomix --output .repomix-snapshot.txt --ignore "*.meta,*.unity,Library/**,Temp/**,obj/**"`
+6. Прочитай `.repomix-snapshot.txt` — пойми текущее состояние кода
+7. `bd update <id> --claim` — возьми задачу в работу
+8. Приступай
 
 ## AFTER EACH TASK
 
@@ -89,11 +91,26 @@ current_branch: feature/OE-MODULE-NNN-short-description
 ## AFTER CONTEXT COMPACTION (потеря контекста)
 
 1. `cat CHANGELOG.md` — прочти последнюю запись: поля `project_state.current_branch` и `next_ready` покажут где остановился предыдущий агент
-2. `bd list --status=in-progress` — проверь нет ли задачи в статусе "claimed but not closed". Если есть — это незаконченная работа предыдущего агента. Прочти её описание, оцени что было сделано по repomix, продолжи или переоткрой
-3. `bd ready --json` — подтверди следующую незаблокированную задачу
-4. `cat .repomix-snapshot.txt` — восстанови понимание текущего кода
-5. Проверь `current_branch` из CHANGELOG — сообщи человеку: "Я должен работать на ветке `<имя>`. Пожалуйста, убедись что ты переключился на неё в GitHub Desktop"
-6. Продолжай с того места, не трогай задачи со статусом COMPLETED
+2. `cat Docs/DesignDialogueLog.md` — восстанови текущий дизайн-вектор и открытые вопросы, которые нельзя забыть
+3. `cat Docs/ImplementationRoadmapV2.md` — восстанови текущий приоритет реализации
+4. `bd list --status=in-progress` — проверь нет ли задачи в статусе "claimed but not closed". Если есть — это незаконченная работа предыдущего агента. Прочти её описание, оцени что было сделано по repomix, продолжи или переоткрой
+5. `bd ready --json` — подтверди следующую незаблокированную задачу
+6. `cat .repomix-snapshot.txt` — восстанови понимание текущего кода
+7. Проверь `current_branch` из CHANGELOG — сообщи человеку: "Я должен работать на ветке `<имя>`. Пожалуйста, убедись что ты переключился на неё в GitHub Desktop"
+8. Продолжай с того места, не трогай задачи со статусом COMPLETED
+
+## DESIGN SOURCE OF TRUTH
+
+Для текущего этапа проекта дизайн-источники истины такие:
+
+1. `Docs/DesignDialogueLog.md` — живой лог обсуждений, договорённостей и открытых вопросов
+2. `Docs/ImplementationRoadmapV2.md` — актуальный порядок реализации
+3. `CHANGELOG.md` — что реально уже сделано в коде и сцене
+
+Если между старым roadmap / beads-задачей / текущим дизайн-логом есть расхождение:
+- не игнорируй дизайн-лог
+- не перепридумывай направление сам
+- сначала сверь это с человеком, если изменение нетривиальное
 
 ## ARCHITECTURE RULES (нарушение = перезапись с нуля)
 

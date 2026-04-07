@@ -108,6 +108,25 @@ Architecture rules from the master project document:
 - [AGENTS.md](AGENTS.md) - Codex workflow and project rules
 - [CLAUDE.md](CLAUDE.md) - Claude workflow and project rules
 - [CHANGELOG.md](CHANGELOG.md) - AI-readable project history
+- [Docs/DesignDialogueLog.md](Docs/DesignDialogueLog.md) - living design discussion log, agreements, open questions, and future-facing ideas
+- [Docs/ImplementationRoadmapV2.md](Docs/ImplementationRoadmapV2.md) - current implementation order derived from the agreed design direction
+
+## Current Design Direction
+
+The gameplay vision is no longer only "build a first playable orbit prototype".
+
+Current agreed direction:
+
+- keep `one-tap` as the core interaction
+- treat planets as gameplay language, not decoration
+- improve readability, route choice, and risk clarity before adding heavy meta systems
+- evolve toward a fast, musical, sometimes tactical arcade game
+- reward bold, skillful decisions inside a run before building long-term progression
+
+Before proposing large gameplay changes, read:
+
+1. [Docs/DesignDialogueLog.md](Docs/DesignDialogueLog.md)
+2. [Docs/ImplementationRoadmapV2.md](Docs/ImplementationRoadmapV2.md)
 
 ## Roadmap
 
