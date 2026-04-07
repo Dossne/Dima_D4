@@ -1,160 +1,252 @@
-# Agent Instructions
+﻿# Orbit Escape — Agent System Prompt
 
-This project uses **bd** (beads) for issue tracking. Run `bd onboard` to get started.
+## ON EVERY SESSION START — do this before anything else
 
-## Quick Reference
+1. `cat CHANGELOG.md` — прочти историю: что сделано, что открыто, заметки предыдущего агента
+2. `cat Docs/DesignDialogueLog.md` — прочти актуальный дизайн-лог: договорённости, open questions, future-facing идеи
+3. `cat Docs/ImplementationRoadmapV2.md` — пойми текущий порядок реализации и чего НЕ надо делать преждевременно
+4. `bd ready --json` — найди следующую незаблокированную задачу (OE-MODULE-NNN)
+5. `repomix --output .repomix-snapshot.txt --ignore "*.meta,*.unity,Library/**,Temp/**,obj/**"`
+6. Прочитай `.repomix-snapshot.txt` — пойми текущее состояние кода
+7. `bd update <id> --claim` — возьми задачу в работу
+8. Приступай
 
-```bash
-bd ready              # Find available work
-bd show <id>          # View issue details
-bd update <id> --claim  # Claim work atomically
-bd close <id>         # Complete work
-bd dolt push          # Push beads data to remote
+## AFTER EACH TASK
+
+1. Убедись, что код компилируется без ошибок
+2. Обнови snapshot: `repomix --output .repomix-snapshot.txt --ignore "*.meta,*.unity,Library/**,Temp/**,obj/**"`
+3. **Обнови CHANGELOG.md** — добавь запись в начало файла (см. формат ниже)
+4. `bd close <id> --reason "done"`
+5. **Сообщи человеку что задача готова** в следующем формате:
+
+---
+✅ **Задача завершена:** `<TASK-ID>` — <название>
+
+📋 **CHANGELOG.md обновлён**
+
+📝 **Закоммить через GitHub Desktop:**
+- **Commit title:** `feat(<scope>): <что сделано>`
+- **Description:** `<список файлов> — <что делает каждый>`
+
+🎮 **Если в этой задаче менялась сцена или префаб:**
+- Открой Unity Editor → **File → Save** (Ctrl+S) → закрой → затем коммит
+
+⏳ Жду подтверждения что закоммитил, затем перехожу к следующей задаче.
+---
+
+6. Дождись ответа человека ("готово" / "закоммитил" / "ok")
+7. `bd ready --json` → следующая задача
+
+## CHANGELOG FORMAT
+
+Файл: `CHANGELOG.md` в корне проекта. Каждая запись — **в начало файла**.
+Task ID берётся из Beads — формат `OE-MODULE-NNN` (OE-CORE-001, OE-PLAYER-002 и т.д.).
+Формат машиночитаемый: следующий агент читает CHANGELOG первым делом при входе в проект.
+
+```markdown
+## [OE-MODULE-NNN] module/component-name | COMPLETED | YYYY-MM-DD
+
+### context
+project: orbit-escape | engine: unity-6 (6000.4.0f1) | pipeline: urp-2d | platform: android
+
+### what_was_implemented
+- ComponentName (Assets/Scripts/Layer/Script.cs):
+    pattern: EventDrivenSubscriber | SingleResponsibility
+    subscribes_to: [GameEvents.OnEventName]
+    fires: [GameEvents.OtherEvent]
+    responsibility: "one sentence — what this script does and nothing else"
+
+### files
+| action   | path                              | notes                        |
+|----------|-----------------------------------|------------------------------|
+| CREATED  | Assets/Scripts/Layer/Script.cs    | responsibility in one phrase |
+| MODIFIED | Assets/Scripts/Core/GameEvents.cs | added OnLanding event        |
+
+### architecture_decisions
+- decision: rationale (e.g. "ShakeOffset property: avoids conflict with CameraFollower.LateUpdate")
+
+### known_limitations
+- limitation or deferred TODO for next agent
+
+### task_ref
+beads_id: OE-MODULE-NNN
+commit_title: feat(scope): description
+current_branch: feature/OE-MODULE-NNN-short-description
+
+### project_state
+completed_tasks: [OE-SETUP-001, OE-CORE-001, ...]
+next_ready: OE-MODULE-NNN (из bd ready --json)
+blocked: [OE-MODULE-NNN (waiting for OE-MODULE-MMM)]
+remaining: N of 22 tasks
+current_branch: feature/OE-MODULE-NNN-short-description
 ```
 
-## Non-Interactive Shell Commands
+**Нейминг задач — формат `OE-MODULE-NNN`:**
+- Префикс: `OE` — Orbit Escape
+- MODULE: `SETUP` / `CORE` / `INPUT` / `PLAYER` / `LEVEL` / `STATE` / `UI` / `AUDIO` / `FEEL` / `BUILD`
+- NNN: трёхзначный номер (`001`, `002`...)
 
-**ALWAYS use non-interactive flags** with file operations to avoid hanging on confirmation prompts.
+Примеры: `OE-CORE-001`, `OE-PLAYER-003`, `OE-BUILD-001`
 
-Shell commands like `cp`, `mv`, and `rm` may be aliased to include `-i` (interactive) mode on some systems, causing the agent to hang indefinitely waiting for y/n input.
+## AFTER CONTEXT COMPACTION (потеря контекста)
 
-**Use these forms instead:**
-```bash
-# Force overwrite without prompting
-cp -f source dest           # NOT: cp source dest
-mv -f source dest           # NOT: mv source dest
-rm -f file                  # NOT: rm file
+1. `cat CHANGELOG.md` — прочти последнюю запись: поля `project_state.current_branch` и `next_ready` покажут где остановился предыдущий агент
+2. `cat Docs/DesignDialogueLog.md` — восстанови текущий дизайн-вектор и открытые вопросы, которые нельзя забыть
+3. `cat Docs/ImplementationRoadmapV2.md` — восстанови текущий приоритет реализации
+4. `bd list --status=in-progress` — проверь нет ли задачи в статусе "claimed but not closed". Если есть — это незаконченная работа предыдущего агента. Прочти её описание, оцени что было сделано по repomix, продолжи или переоткрой
+5. `bd ready --json` — подтверди следующую незаблокированную задачу
+6. `cat .repomix-snapshot.txt` — восстанови понимание текущего кода
+7. Проверь `current_branch` из CHANGELOG — сообщи человеку: "Я должен работать на ветке `<имя>`. Пожалуйста, убедись что ты переключился на неё в GitHub Desktop"
+8. Продолжай с того места, не трогай задачи со статусом COMPLETED
 
-# For recursive operations
-rm -rf directory            # NOT: rm -r directory
-cp -rf source dest          # NOT: cp -r source dest
+## DESIGN SOURCE OF TRUTH
+
+Для текущего этапа проекта дизайн-источники истины такие:
+
+1. `Docs/DesignDialogueLog.md` — живой лог обсуждений, договорённостей и открытых вопросов
+2. `Docs/ImplementationRoadmapV2.md` — актуальный порядок реализации
+3. `CHANGELOG.md` — что реально уже сделано в коде и сцене
+
+Если между старым roadmap / beads-задачей / текущим дизайн-логом есть расхождение:
+- не игнорируй дизайн-лог
+- не перепридумывай направление сам
+- сначала сверь это с человеком, если изменение нетривиальное
+
+## ARCHITECTURE RULES (нарушение = перезапись с нуля)
+
+- Вся коммуникация между скриптами ТОЛЬКО через GameEvents.cs
+- Запрещено: FindObjectOfType, FindGameObjectWithTag, GetComponent на чужих объектах
+- Запрещено: прямые ссылки UI → Player/Gameplay runtime logic (PlayerMovement, PlayerCollider и т.д.)
+- Разрешено: UI → orchestration/service классы через `[SerializeField]` (GameStateManager, ScoreManager) — они не runtime gameplay, они сервисы
+- Для доступа к Transform игрока — использовать PlayerRegistry.Player (статический класс)
+- Целевой размер: ~60 строк. Абсолютный стоп: 80 строк. 60–80 допустимо если одна ответственность.
+- Camera logic: ТОЛЬКО в CameraFollower.cs
+- Asteroid spawning: ТОЛЬКО в AsteroidSpawner.cs
+- UI: четыре Canvas панели в ОДНОЙ сцене (SetActive переключение)
+- Подписки на события: ВСЕГДА именованные делегаты (не анонимные лямбды) — иначе нельзя отписаться в OnDestroy
+
+## UNITY SAFETY RULES
+
+- Preserve .meta files — не удаляй и не перемещай без необходимости
+- Do not rename or move files unless the task explicitly requires it
+- Do not add new Unity packages without clear reason stated in the task
+- Do not edit ProjectSettings/ unless the task explicitly requires it
+- Be careful with scene and prefab modifications — keep scope tight
+- Avoid unnecessary serialization churn
+- If a change is risky for scenes, prefabs, or asset references — explicitly mention that risk in the report
+- Prefer clear and boring code over clever abstractions
+- Keep public API surface small
+
+## CODE STYLE
+
+- Prefer minimal, targeted changes
+- Keep classes small — single responsibility
+- Use descriptive names (PascalCase public, _camelCase private)
+- Avoid creating large frameworks for prototype-only needs
+
+## SELF-CHECK (перед закрытием задачи)
+
+**Компиляция:**
+- [ ] Скрипт компилируется без ошибок (агент проверяет синтаксис)?
+- [ ] Нет `using` которые не используются?
+
+**Архитектура:**
+- [ ] Нет FindObjectOfType / FindGameObjectWithTag?
+- [ ] Нет прямых ссылок между Logic и UI скриптами?
+- [ ] Нет анонимных лямбд в подписках на события?
+- [ ] Каждая подписка в Awake имеет отписку в OnDestroy?
+- [ ] Скрипт короче 80 строк? (целевой 60, абсолютный стоп 80)
+- [ ] GameEvents.cs не изменён без причины?
+
+**Unity safety:**
+- [ ] .meta файлы не затронуты?
+- [ ] ProjectSettings/ не изменён без явного требования?
+- [ ] Изменения в сцене/префабах минимальны и обоснованы?
+- [ ] Если изменял сцену или префаб — в отчёте человеку есть напоминание сохранить (Ctrl+S)?
+
+**Честность:**
+- [ ] НЕ заявляй что gameplay проверен в редакторе, если это не так
+- [ ] Укажи в CHANGELOG что не было верифицировано
+
+## STOP AND REPORT TO HUMAN IF
+
+- Скрипт вышел за 80 строк И есть явно 2+ ответственности — нет понятного способа разбить
+- Ошибка компиляции не устраняется за 2 попытки
+- Нужно архитектурное решение, не описанное в документе
+- Unity MCP вернул ошибку при создании файла
+- Требуется изменить ProjectSettings/ или добавить пакет — сначала спроси
+- Нужно переименовать или переместить файл — сначала спроси
+
+## HUMAN CHECKPOINTS (Unity Editor — агент не может его запустить)
+
+После этих задач агент пишет:
+```text
+🔍 HUMAN CHECKPOINT требуется:
+1. Открой Unity Editor
+2. Дождись компиляции (нижняя панель Console — нет красных ошибок)
+3. Напиши мне: "checkpoint passed" или "errors: [текст ошибок]"
 ```
 
-**Other commands that may prompt:**
-- `scp` - use `-o BatchMode=yes` for non-interactive
-- `ssh` - use `-o BatchMode=yes` to fail instead of prompting
-- `apt-get` - use `-y` flag
-- `brew` - use `HOMEBREW_NO_AUTO_UPDATE=1` env var
+Чекпоинты: после OE-CORE-001, OE-PLAYER-003, OE-LEVEL-004, OE-UI-004, OE-FEEL-001
 
-<!-- BEGIN BEADS INTEGRATION v:1 profile:full hash:f65d5d33 -->
-## Issue Tracking with bd (beads)
+## SKILL USAGE POLICY
 
-**IMPORTANT**: This project uses **bd (beads)** for ALL issue tracking. Do NOT use markdown TODOs, task lists, or other tracking methods.
+Before implementing any non-trivial logic (new script pattern, architecture decision, testing approach), check for applicable skills. Simple tasks (set Inspector value, configure build setting) — skip this step.
 
-### Why bd?
-
-- Dependency-aware: Track blockers and relationships between issues
-- Git-friendly: Dolt-powered version control with native sync
-- Agent-optimized: JSON output, ready work detection, discovered-from links
-- Prevents duplicate tracking systems and confusion
-
-### Quick Start
-
-**Check for ready work:**
-
+**Step 1 — LOCAL skills (Claude Code only, Codex skip to Step 2):**
 ```bash
-bd ready --json
+ls /mnt/skills/user/        # твои пользовательские скиллы
+ls /mnt/skills/public/      # публичные скиллы
 ```
+If a SKILL.md exists for your domain → `cat /mnt/skills/user/<skill>/SKILL.md` → follow its instructions.
+Known relevant skills already available: `unity-architecture-specialist`, `coding-agent`, `beads-setup`.
 
-**Create new issues:**
-
-```bash
-bd create "Issue title" --description="Detailed context" -t bug|feature|task -p 0-4 --json
-bd create "Issue title" --description="What this issue is about" -p 1 --deps discovered-from:bd-123 --json
+**Step 2 — ONLINE search (both Claude Code and Codex):**
+Use `search_prompts` tool from prompts.chat MCP:
+```text
+search_prompts(query="unity <your topic>", limit=5)
+search_prompts(query="c# <your pattern>", limit=5)
 ```
+If a relevant skill/prompt is found → read it → apply its guidance.
 
-**Claim and update:**
+**Step 3 — FALLBACK:**
+If no skill found in Step 1 or Step 2 → proceed strictly with Master Document instructions.
+**Do NOT invent patterns not described in this document.** If the document doesn't cover the case → STOP AND REPORT TO HUMAN.
 
-```bash
-bd update <id> --claim --json
-bd update bd-42 --priority 1 --json
-```
+**Scope — apply this policy for:**
+- Writing a new script from scratch
+- Choosing between two implementation approaches
+- Deciding on a Unity-specific pattern (coroutine vs Update, event vs direct call)
 
-**Complete work:**
+**Skip this policy for:**
+- Copying code already provided in §5 of this document
+- Setting Inspector values, build settings, material properties
+- Git/Beads/repomix operations
 
-```bash
-bd close bd-42 --reason "Completed" --json
-```
+## GIT RULES
 
-### Issue Types
+- НЕ делай git add, git commit, git push, git remote — всё это делает человек через GitHub Desktop
+- НЕ создавай и не переключай ветки — это делает человек
+- После каждой задачи предложи: commit title + description + имя ветки
+- Формат commit title: `feat(scope): описание`
+- Формат имени ветки: `feature/OE-MODULE-NNN-short-description`
+- Remote репо проекта: `https://github.com/Dossne/Dima_D4.git` (только для контекста, не трогать)
 
-- `bug` - Something broken
-- `feature` - New functionality
-- `task` - Work item (tests, docs, refactoring)
-- `epic` - Large feature with subtasks
-- `chore` - Maintenance (dependencies, tooling)
+## REPOMIX READING STRATEGY
 
-### Priorities
+Не читай snapshot целиком — экономь токены.
 
-- `0` - Critical (security, data loss, broken builds)
-- `1` - High (major features, important bugs)
-- `2` - Medium (default, nice-to-have)
-- `3` - Low (polish, optimization)
-- `4` - Backlog (future ideas)
+| Текущая задача | Что читать |
+|---|---|
+| OE-SETUP-001 | Только CHANGELOG.md — кода ещё нет |
+| OE-CORE-001 — OE-INPUT-001 | `repomix --include "Assets/Scripts/**"` |
+| OE-PLAYER-* — OE-STATE-* | `repomix --include "Assets/Scripts/Core/**,Assets/Scripts/<твой модуль>/**"` |
+| OE-UI-* — OE-BUILD-001 | `repomix --include "Assets/Scripts/Core/**,Assets/Scripts/UI/**"` |
 
-### Workflow for AI Agents
+**Обновляй snapshot только:**
+- После завершения задачи (перед CHANGELOG)
+- После получения "checkpoint passed" от человека
+- НЕ обновляй в середине задачи
 
-1. **Check ready work**: `bd ready` shows unblocked issues
-2. **Claim your task atomically**: `bd update <id> --claim`
-3. **Work on it**: Implement, test, document
-4. **Discover new work?** Create linked issue:
-   - `bd create "Found bug" --description="Details about what was found" -p 1 --deps discovered-from:<parent-id>`
-5. **Complete**: `bd close <id> --reason "Done"`
-
-### Quality
-- Use `--acceptance` and `--design` fields when creating issues
-- Use `--validate` to check description completeness
-
-### Lifecycle
-- `bd defer <id>` / `bd supersede <id>` for issue management
-- `bd stale` / `bd orphans` / `bd lint` for hygiene
-- `bd human <id>` to flag for human decisions
-- `bd formula list` / `bd mol pour <name>` for structured workflows
-
-### Auto-Sync
-
-bd automatically syncs via Dolt:
-
-- Each write auto-commits to Dolt history
-- Use `bd dolt push`/`bd dolt pull` for remote sync
-- No manual export/import needed!
-
-### Important Rules
-
-- ✅ Use bd for ALL task tracking
-- ✅ Always use `--json` flag for programmatic use
-- ✅ Link discovered work with `discovered-from` dependencies
-- ✅ Check `bd ready` before asking "what should I work on?"
-- ❌ Do NOT create markdown TODO lists
-- ❌ Do NOT use external issue trackers
-- ❌ Do NOT duplicate tracking systems
-
-For more details, see README.md and docs/QUICKSTART.md.
-
-## Session Completion
-
-**When ending a work session**, you MUST complete ALL steps below. Work is NOT complete until `git push` succeeds.
-
-**MANDATORY WORKFLOW:**
-
-1. **File issues for remaining work** - Create issues for anything that needs follow-up
-2. **Run quality gates** (if code changed) - Tests, linters, builds
-3. **Update issue status** - Close finished work, update in-progress items
-4. **PUSH TO REMOTE** - This is MANDATORY:
-   ```bash
-   git pull --rebase
-   bd dolt push
-   git push
-   git status  # MUST show "up to date with origin"
-   ```
-5. **Clean up** - Clear stashes, prune remote branches
-6. **Verify** - All changes committed AND pushed
-7. **Hand off** - Provide context for next session
-
-**CRITICAL RULES:**
-- Work is NOT complete until `git push` succeeds
-- NEVER stop before pushing - that leaves work stranded locally
-- NEVER say "ready to push when you are" - YOU must push
-- If push fails, resolve and retry until it succeeds
-
-<!-- END BEADS INTEGRATION -->
+`GameEvents.cs` всегда читай целиком — он маленький и критичный.
+Если snapshot > 500 строк — читай только первые 200 строк + весь `Assets/Scripts/Core/`.
