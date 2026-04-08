@@ -4,15 +4,16 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
     [SerializeField] private float launchForce = 10f;
-    [SerializeField] private float maxFlightDistance = 12f;
+    [SerializeField] private float planetFailRadius = 8f;
 
     public float LaunchForce => launchForce;
+    public bool IsFlying => _hasLaunched;
+    public Vector2 CurrentVelocity => _rigidbody != null ? _rigidbody.linearVelocity : Vector2.zero;
 
     private Rigidbody2D _rigidbody;
     private PlayerOrbitController _orbitController;
     private Camera _camera;
     private bool _hasLaunched;
-    private Vector3 _launchOrigin;
 
     private void Awake()
     {
@@ -42,8 +43,7 @@ public class PlayerMovement : MonoBehaviour
         Vector3 vp = _camera.WorldToViewportPoint(transform.position);
         bool outX = vp.x < -0.2f || vp.x > 1.2f;
         bool outY = vp.y < -0.1f || vp.y > 1.1f;
-        bool tooFarFromLaunch = Vector3.Distance(transform.position, _launchOrigin) > maxFlightDistance;
-        if (outX || outY || tooFarFromLaunch)
+        if (outX || outY || !HasNearbyPlanet())
             GameEvents.GameOver();
     }
 
@@ -55,13 +55,12 @@ public class PlayerMovement : MonoBehaviour
         }
 
         Vector2 offset = transform.position - _orbitController.currentPivot.position;
-        Vector2 tangent = Vector2.Perpendicular(offset.normalized);
+        Vector2 tangent = _orbitController.GetLaunchTangent(offset);
         if (tangent == Vector2.zero)
         {
             tangent = Vector2.right;
         }
 
-        _launchOrigin = transform.position;
         SetDynamicMode();
         _rigidbody.AddForce(tangent * launchForce, ForceMode2D.Impulse);
         _hasLaunched = true;
@@ -88,5 +87,13 @@ public class PlayerMovement : MonoBehaviour
         if (_rigidbody == null) return;
         _rigidbody.linearVelocity = Vector2.zero;
         _rigidbody.angularVelocity = 0f;
+    }
+
+    private bool HasNearbyPlanet()
+    {
+        foreach (var hit in Physics2D.OverlapCircleAll(transform.position, planetFailRadius))
+            if (hit != null && hit.CompareTag("Planet"))
+                return true;
+        return false;
     }
 }

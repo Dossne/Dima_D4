@@ -25,6 +25,11 @@ public class AsteroidSpawner : MonoBehaviour
 
     private void HandleScoreUpdated(int score)
     {
+        if (!isActiveAndEnabled)
+        {
+            return;
+        }
+
         if (!ShouldSpawnAsteroid(score))
         {
             return;

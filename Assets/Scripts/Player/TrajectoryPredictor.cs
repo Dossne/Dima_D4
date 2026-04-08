@@ -131,7 +131,7 @@ public class TrajectoryPredictor : MonoBehaviour
         Transform playerTransform = transform;
         Vector3 pivotPosition = _orbitController.currentPivot.position;
         Vector2 radial = (Vector2)(playerTransform.position - pivotPosition);
-        Vector2 tangent = Vector2.Perpendicular(radial.normalized);
+        Vector2 tangent = _orbitController.GetLaunchTangent(radial);
         if (tangent == Vector2.zero)
         {
             tangent = Vector2.right;

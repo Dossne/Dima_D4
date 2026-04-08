@@ -10,6 +10,7 @@ public static class GameEvents
     public static event Action OnLanding;
     public static event Action OnPlanetReached;
     public static event Action<Transform> OnPlanetLanded;
+    public static event Action<Transform, Transform> OnRoutePreviewChanged;
     public static event Action OnNearMiss;
     public static event Action OnGameOver;
 
@@ -20,6 +21,7 @@ public static class GameEvents
     public static void Landing() => OnLanding?.Invoke();
     public static void PlanetReached() => OnPlanetReached?.Invoke();
     public static void PlanetLanded(Transform planet) => OnPlanetLanded?.Invoke(planet);
+    public static void RoutePreviewChanged(Transform currentPlanet, Transform nextPlanet) => OnRoutePreviewChanged?.Invoke(currentPlanet, nextPlanet);
     public static void NearMiss() => OnNearMiss?.Invoke();
     public static void GameOver() => OnGameOver?.Invoke();
 
@@ -32,6 +34,7 @@ public static class GameEvents
         OnLanding = null;
         OnPlanetReached = null;
         OnPlanetLanded = null;
+        OnRoutePreviewChanged = null;
         OnNearMiss = null;
         OnGameOver = null;
     }

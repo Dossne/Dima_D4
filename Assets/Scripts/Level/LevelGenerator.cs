@@ -27,28 +27,37 @@ public class LevelGenerator : MonoBehaviour
 
     private void HandleGameStarted()
     {
+        if (!isActiveAndEnabled) return;
         if (PlayerRegistry.Player == null || planetPrefab == null) return;
 
         CleanUp();
         _orbitPlanet = Instantiate(planetPrefab, PlayerRegistry.Player.position + Vector3.up * firstPlanetDistance, Quaternion.identity);
         GameEvents.PlanetLanded(_orbitPlanet.transform);
         SpawnNextTarget();
+        NotifyRoutePreview();
     }
 
     private void HandleScoreUpdated(int score)
     {
+        if (!isActiveAndEnabled) return;
         if (score <= 0 || PlayerRegistry.Player == null || planetPrefab == null) return;
 
         Planet old = _orbitPlanet;
         _orbitPlanet = _nextTarget;
         if (old != null) Destroy(old.gameObject);
         SpawnNextTarget();
+        NotifyRoutePreview();
     }
 
     private void SpawnNextTarget()
     {
         if (PlayerRegistry.Player == null || planetPrefab == null) return;
         _nextTarget = Instantiate(planetPrefab, FindSpawnPosition(), Quaternion.identity);
+    }
+
+    private void NotifyRoutePreview()
+    {
+        GameEvents.RoutePreviewChanged(_orbitPlanet != null ? _orbitPlanet.transform : null, _nextTarget != null ? _nextTarget.transform : null);
     }
 
     private void CleanUp()
